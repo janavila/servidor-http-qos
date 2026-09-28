@@ -7,3 +7,4 @@ core
 .vscode/
 tests/downloads/
 *.md
+!README.md
