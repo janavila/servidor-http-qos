@@ -1,0 +1,9 @@
+servidor
+*.o
+*.log
+*.pcap
+core
+.DS_Store
+.vscode/
+tests/downloads/
+*.md
