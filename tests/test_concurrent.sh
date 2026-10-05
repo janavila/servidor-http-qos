@@ -11,6 +11,8 @@ for clients in 1 2 5 10; do
     curl -fsS "http://127.0.0.1:${PORT}/imagem1.jpg" -o "$TMP_DIR/imagem_${clients}_${i}.jpg" &
     pids+=("$!")
   done
+  sleep 5
+  
   for pid in "${pids[@]}"; do wait "$pid"; done
   for ((i = 1; i <= clients; i++)); do
     cmp www/imagem1.jpg "$TMP_DIR/imagem_${clients}_${i}.jpg"
