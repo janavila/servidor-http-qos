@@ -1,6 +1,9 @@
 #include "file_handler.h"
 
 #include "http.h"
+#include "qos_config.h"
+#include "qos_conn_tracker.h"
+#include "qos_throttling.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -9,7 +12,6 @@
 #include <sys/stat.h>
 
 #define DOCUMENT_ROOT "www"
-#define FILE_BUFFER_SIZE 16384
 
 const char *get_mime_type(const char *path) {
     const char *extension = strrchr(path, '.');
@@ -33,11 +35,23 @@ static int path_is_safe(const char *url_path) {
            strchr(url_path, '#') == NULL;
 }
 
+/* Contexto do callback de taxa: a taxa da conexao e reavaliada a cada bloco,
+ * entao muda sozinha quando outras transferencias do mesmo IP comecam ou terminam. */
+typedef struct {
+    const char *client_ip;
+} RateContext;
+
+static uint32_t current_rate_kbps(void *context) {
+    const RateContext *rate = context;
+    return qos_effective_rate_kbps(rate->client_ip,
+                                   qos_transfer_count(rate->client_ip));
+}
+
 int serve_static_file(int socket_fd, const char *url_path, int keep_alive,
-                      int *status_code) {
+                      int *status_code, const char *client_ip) {
     char disk_path[4096];
-    char buffer[FILE_BUFFER_SIZE];
     const char *relative_path;
+    const char *mime_type;
     struct stat file_info;
     FILE *file;
 
@@ -70,26 +84,36 @@ int serve_static_file(int socket_fd, const char *url_path, int keep_alive,
                                "Nao foi possivel abrir o arquivo.", keep_alive);
     }
 
-    if (http_send_headers(socket_fd, 200, "OK", get_mime_type(disk_path),
+    mime_type = get_mime_type(disk_path);
+    if (http_send_headers(socket_fd, 200, "OK", mime_type,
                           (size_t)file_info.st_size, keep_alive) < 0) {
         fclose(file);
         return -1;
     }
 
-    while (!feof(file)) {
-        size_t bytes_read = fread(buffer, 1, sizeof(buffer), file);
-        if (bytes_read > 0 && send_all(socket_fd, buffer, bytes_read) < 0) {
-            fclose(file);
-            return -1;
-        }
-        if (ferror(file)) {
-            perror("fread");
-            fclose(file);
+    {
+        /* HTML e isento de limitacao (e nao conta na divisao da taxa);
+         * os demais objetos sao enviados com pacing. */
+        RateContext rate = {client_ip};
+        int limited = !qos_mime_is_exempt(mime_type);
+        int tracked = limited && qos_transfer_begin(client_ip);
+        ssize_t sent = qos_send_file_throttled_dyn(socket_fd, file,
+                                                   (size_t)file_info.st_size,
+                                                   mime_type, current_rate_kbps, &rate);
+        int saved_errno = errno;
+
+        if (tracked) qos_transfer_end(client_ip);
+        fclose(file);
+
+        if (sent < 0) {
+            if (saved_errno != EPIPE && saved_errno != ECONNRESET) {
+                errno = saved_errno;
+                perror("qos_send_file");
+            }
             return -1;
         }
     }
 
-    fclose(file);
     *status_code = 200;
     return 0;
 }

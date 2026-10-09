@@ -1,5 +1,6 @@
 #include "file_handler.h"
 #include "http.h"
+#include "qos_config.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -29,6 +30,19 @@ static int parse_port(const char *text, unsigned short *port) {
         return -1;
     }
     *port = (unsigned short)value;
+    return 0;
+}
+
+static int parse_throughput(const char *text, long *kbps) {
+    char *end;
+    long value;
+
+    errno = 0;
+    value = strtol(text, &end, 10);
+    if (errno != 0 || *text == '\0' || *end != '\0' || value < 1 || value > 2000000000L) {
+        return -1;
+    }
+    *kbps = value;
     return 0;
 }
 
@@ -106,7 +120,7 @@ static void *handle_client(void *argument) {
                                      request.keep_alive);
         } else {
             result = serve_static_file(client->socket_fd, request.path,
-                                       request.keep_alive, &status);
+                                       request.keep_alive, &status, client_ip);
         }
 
         printf("%d %s\n", status,
@@ -122,17 +136,35 @@ static void *handle_client(void *argument) {
 
 int main(int argc, char **argv) {
     unsigned short port = DEFAULT_PORT;
+    long max_throughput_kbps = 0;
+    const char *qos_file = NULL;
     int server_fd;
 
-    if (argc > 2 || (argc == 2 && parse_port(argv[1], &port) < 0)) {
-        fprintf(stderr, "Uso: %s [porta de 1 a 65535]\n", argv[0]);
+    if (argc > 4 || (argc >= 2 && parse_port(argv[1], &port) < 0) ||
+        (argc == 4 && parse_throughput(argv[3], &max_throughput_kbps) < 0)) {
+        fprintf(stderr,
+                "Uso: %s [porta de 1 a 65535] [arquivo_qos] [vazao_maxima_kbps]\n",
+                argv[0]);
         return EXIT_FAILURE;
     }
+    if (argc >= 3) qos_file = argv[2];
     signal(SIGPIPE, SIG_IGN);
+
+    /* Deve ocorrer antes de criar threads. Sem arquivo, todos os IPs usam a
+     * taxa padrao; com arquivo informado e ilegivel, e melhor falhar logo. */
+    if (qos_file != NULL && qos_load_config(qos_file) != 0) return EXIT_FAILURE;
     server_fd = create_server_socket(port);
     if (server_fd < 0) return EXIT_FAILURE;
 
     printf("Servidor iniciado na porta %u\n", port);
+    if (qos_file == NULL) {
+        printf("QoS: sem arquivo de configuracao; taxa padrao de %u kbps para todos os IPs\n",
+               QOS_DEFAULT_RATE_KBPS);
+    }
+    if (max_throughput_kbps > 0) {
+        printf("Vazao maxima configurada: %ld kbps (controle de admissao ainda nao implementado)\n",
+               max_throughput_kbps);
+    }
     fflush(stdout);
     for (;;) {
         ClientContext *client = malloc(sizeof(*client));
