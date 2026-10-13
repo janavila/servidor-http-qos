@@ -44,7 +44,7 @@ typedef struct {
 static uint32_t current_rate_kbps(void *context) {
     const RateContext *rate = context;
     return qos_effective_rate_kbps(rate->client_ip,
-                                   qos_transfer_count(rate->client_ip));
+                                   qos_connection_count(rate->client_ip));
 }
 
 int serve_static_file(int socket_fd, const char *url_path, int keep_alive,
@@ -92,17 +92,14 @@ int serve_static_file(int socket_fd, const char *url_path, int keep_alive,
     }
 
     {
-        /* HTML e isento de limitacao (e nao conta na divisao da taxa);
-         * os demais objetos sao enviados com pacing. */
+        /* A conexao TCP ja foi registrada na admissao. HTML e isento de
+         * limitacao; os demais objetos usam a contagem real de sockets do IP. */
         RateContext rate = {client_ip};
-        int limited = !qos_mime_is_exempt(mime_type);
-        int tracked = limited && qos_transfer_begin(client_ip);
         ssize_t sent = qos_send_file_throttled_dyn(socket_fd, file,
                                                    (size_t)file_info.st_size,
                                                    mime_type, current_rate_kbps, &rate);
         int saved_errno = errno;
 
-        if (tracked) qos_transfer_end(client_ip);
         fclose(file);
 
         if (sent < 0) {

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PORT="${PORT:-18080}"
-./servidor "$PORT" > tests/server-test.log 2>&1 &
+./servidor "$PORT" qos_config.txt 100000 > tests/server-test.log 2>&1 &
 SERVER_PID="$!"
 trap 'kill "$SERVER_PID" 2>/dev/null || true; wait "$SERVER_PID" 2>/dev/null || true' EXIT
 
