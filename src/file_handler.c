@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include "file_handler.h"
 
 #include "http.h"
@@ -10,6 +12,7 @@
 #include <string.h>
 #include <strings.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #define DOCUMENT_ROOT "www"
 
@@ -48,12 +51,16 @@ static uint32_t current_rate_kbps(void *context) {
 }
 
 int serve_static_file(int socket_fd, const char *url_path, int keep_alive,
-                      int *status_code, const char *client_ip) {
+                      int *status_code, const char *client_ip,
+                      StaticFileResult *file_result) {
     char disk_path[4096];
     const char *relative_path;
     const char *mime_type;
     struct stat file_info;
     FILE *file;
+
+    if (file_result)
+        memset(file_result, 0, sizeof *file_result);
 
     if (!path_is_safe(url_path)) {
         *status_code = 403;
@@ -85,6 +92,8 @@ int serve_static_file(int socket_fd, const char *url_path, int keep_alive,
     }
 
     mime_type = get_mime_type(disk_path);
+    if (file_result)
+        file_result->is_html = qos_mime_is_exempt(mime_type);
     if (http_send_headers(socket_fd, 200, "OK", mime_type,
                           (size_t)file_info.st_size, keep_alive) < 0) {
         fclose(file);
@@ -95,9 +104,13 @@ int serve_static_file(int socket_fd, const char *url_path, int keep_alive,
         /* A conexao TCP ja foi registrada na admissao. HTML e isento de
          * limitacao; os demais objetos usam a contagem real de sockets do IP. */
         RateContext rate = {client_ip};
+        struct timespec started;
+        struct timespec finished;
+        int have_start = clock_gettime(CLOCK_MONOTONIC, &started) == 0;
         ssize_t sent = qos_send_file_throttled_dyn(socket_fd, file,
                                                    (size_t)file_info.st_size,
                                                    mime_type, current_rate_kbps, &rate);
+        int have_finish = clock_gettime(CLOCK_MONOTONIC, &finished) == 0;
         int saved_errno = errno;
 
         fclose(file);
@@ -108,6 +121,14 @@ int serve_static_file(int socket_fd, const char *url_path, int keep_alive,
                 perror("qos_send_file");
             }
             return -1;
+        }
+        if (file_result) {
+            file_result->bytes_sent = (size_t)sent;
+            if (have_start && have_finish) {
+                file_result->transfer_seconds =
+                    (double)(finished.tv_sec - started.tv_sec) +
+                    (double)(finished.tv_nsec - started.tv_nsec) / 1000000000.0;
+            }
         }
     }
 

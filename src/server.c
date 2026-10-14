@@ -1,7 +1,10 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include "file_handler.h"
 #include "http.h"
 #include "qos_config.h"
 #include "qos_conn_tracker.h"
+#include "qos_metrics.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -13,6 +16,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <time.h>
 
 #define DEFAULT_PORT 8080
 #define LISTEN_BACKLOG 64
@@ -82,6 +86,46 @@ static int create_server_socket(unsigned short port) { //cria e prepara o socket
     return socket_fd;
 }
 
+static void *metrics_panel(void *unused)
+{
+    (void)unused;
+    const struct timespec interval = {2, 0};
+
+    for (;;) {
+        QosConnectionSnapshot clients[QOS_CONNECTIONS_MAX_IPS];
+        uint64_t allocated = 0, maximum = 0;
+        size_t count;
+
+        nanosleep(&interval, NULL);
+        count = qos_connections_snapshot(clients, QOS_CONNECTIONS_MAX_IPS,
+                                         &allocated, &maximum);
+        printf("\n============================================================\n");
+        printf("Servidor HTTP/1.1 + QoS | Vazao: %llu / %llu kbps\n",
+               (unsigned long long)allocated, (unsigned long long)maximum);
+        printf("------------------------------------------------------------\n");
+        printf("%-15s %5s %9s %10s %10s %12s\n",
+               "IP", "Con.", "Taxa IP", "Taxa/Conn", "RTT est.", "Banda est.");
+        for (size_t i = 0; i < count; i++) {
+            QosMetricsSnapshot metrics;
+            int found = qos_metrics_get(clients[i].ip, &metrics);
+            char rtt[24] = "--", bandwidth[24] = "--";
+            if (found && metrics.has_rtt)
+                snprintf(rtt, sizeof rtt, "%.2f ms", metrics.estimated_rtt_ms);
+            if (found && metrics.has_bandwidth)
+                snprintf(bandwidth, sizeof bandwidth, "%.2f kbps",
+                         metrics.estimated_bandwidth_kbps);
+            printf("%-15s %5d %9u %10u %10s %12s\n",
+                   clients[i].ip, clients[i].connections_for_ip,
+                   clients[i].configured_rate_kbps, clients[i].effective_rate_kbps,
+                   rtt, bandwidth);
+        }
+        if (count == 0)
+            printf("Nenhum cliente ativo.\n");
+        printf("============================================================\n");
+    }
+    return NULL;
+}
+
 static void *handle_client(void *argument) {
     ClientContext *client = argument;
     HttpConnectionBuffer buffer = {{0}, 0};
@@ -93,8 +137,10 @@ static void *handle_client(void *argument) {
 
     for (;;) {
         HttpRequest request;
+        struct timespec request_arrival;
         int result = http_read_request(client->socket_fd, &buffer, &request);// lê a requisição HTTP do cliente e armazena no buffer e na estrutura request
         int status = 0;
+        int have_arrival = qos_metrics_now(&request_arrival) == 0;
 
         if (result == 0 || result == -1) break;// se o cliente fechou a conexão ou ocorreu um erro, sai do loop
         if (result == -2) {// se a requisição ultrapassou o limite de 16 KiB, envia um erro 431
@@ -122,8 +168,26 @@ static void *handle_client(void *argument) {
                                      "Este MVP aceita somente o metodo GET.",
                                      request.keep_alive);
         } else {
+            StaticFileResult file_result;
             result = serve_static_file(client->socket_fd, request.path,
-                                       request.keep_alive, &status, client->ip);
+                                       request.keep_alive, &status, client->ip,
+                                       &file_result);
+            if (result == 0 && status == 200 && have_arrival) {
+                if (file_result.is_html) {
+                    qos_metrics_record_html(client->ip, &request_arrival);
+                } else {
+                    int rtt_ready = qos_metrics_record_object(client->ip, &request_arrival);
+                    qos_metrics_record_transfer(client->ip, file_result.bytes_sent,
+                                                file_result.transfer_seconds);
+                    if (rtt_ready) {
+                        QosMetricsSnapshot metrics;
+                        if (qos_metrics_get(client->ip, &metrics))
+                            printf("Metricas %s: RTT estimado %.2f ms, banda estimada %.2f kbps\n",
+                                   client->ip, metrics.estimated_rtt_ms,
+                                   metrics.estimated_bandwidth_kbps);
+                    }
+                }
+            }
         }
 
         printf("%d %s\n", status,
@@ -149,6 +213,7 @@ int main(int argc, char **argv) {
     uint64_t max_throughput_kbps;
     const char *qos_file;
     int server_fd;
+    pthread_t panel_thread;
 
     setvbuf(stdout, NULL, _IOLBF, 0);
     if (argc != 4 || parse_port(argv[1], &port) < 0 || argv[2][0] == '\0' ||
@@ -163,12 +228,23 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Nao foi possivel inicializar o controle de admissao.\n");
         return EXIT_FAILURE;
     }
+    qos_metrics_init();
     server_fd = create_server_socket(port);
     if (server_fd < 0) return EXIT_FAILURE;
 
     printf("Servidor iniciado na porta %u\n", port);
     printf("Arquivo QoS: %s\n", qos_file);
     printf("Vazao maxima: %llu kbps\n", (unsigned long long)max_throughput_kbps);
+    if (pthread_create(&panel_thread, NULL, metrics_panel, NULL) != 0) {
+        fprintf(stderr, "pthread_create: nao foi possivel criar o painel\n");
+        close(server_fd);
+        return EXIT_FAILURE;
+    }
+    if (pthread_detach(panel_thread) != 0) {
+        fprintf(stderr, "pthread_detach: nao foi possivel destacar o painel\n");
+        close(server_fd);
+        return EXIT_FAILURE;
+    }
     fflush(stdout); // esvazia o buffer de saída padrão
     for (;;) {
         QosConnectionState state;

@@ -23,6 +23,11 @@ WWW_DIR="${WWW_DIR:-www}"
 TOL="${TOL:-20}"
 PARALLEL="${PARALLEL:-1}"
 BASE="http://127.0.0.1:${PORT}"
+CLIENT_IP="${CLIENT_IP:-}"
+CURL_SOURCE=()
+if [ -n "$CLIENT_IP" ]; then
+    CURL_SOURCE=(--interface "$CLIENT_IP")
+fi
 
 for cmd in curl awk head mktemp; do
     command -v "$cmd" >/dev/null 2>&1 || { echo "ERRO: '$cmd' nao encontrado" >&2; exit 2; }
@@ -43,7 +48,7 @@ head -c "$SIZE" /dev/zero > "$JPG"
 head -c "$SIZE" /dev/zero > "$HTML"
 
 # fetch <caminho> -> imprime "<bytes_baixados> <tempo_total_s>"
-fetch() { curl -s -o /dev/null -w '%{size_download} %{time_total}' "$BASE$1"; }
+fetch() { curl "${CURL_SOURCE[@]}" -s -o /dev/null -w '%{size_download} %{time_total}' "$BASE$1"; }
 
 # within <medido> <esperado>: sucesso se estiver na faixa [esp*(1-TOL) - 0,1 ; esp*(1+TOL) + 0,2]
 # (a folga absoluta cobre o primeiro bloco, que sai sem espera, e o overhead do curl)

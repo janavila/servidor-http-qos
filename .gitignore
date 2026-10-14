@@ -1,10 +1,16 @@
 servidor
 *.o
+*.d
 *.log
 *.pcap
 core
 .DS_Store
 .vscode/
 tests/downloads/
+tests/test_qos_metrics
+tests/test_qos_member2
+www/heavy/
 *.md
 !README.md
+!docs/
+!docs/*.md

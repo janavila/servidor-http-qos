@@ -22,6 +22,8 @@ static int failures;
 static void test_admission(void)
 {
     QosConnectionState state;
+    QosConnectionSnapshot snapshot[4];
+    uint64_t allocated = 0, maximum = 0;
 
     CHECK(qos_connections_init(2000) == 0, "estado inicializado");
     CHECK(qos_connection_admit("10.0.0.1", &state) == 1,
@@ -36,6 +38,10 @@ static void test_admission(void)
           "duas conexoes TCP contabilizadas");
     CHECK(state.effective_rate_kbps == 500 && state.global_allocated_kbps == 1000,
           "taxa dividida sem dupla contabilizacao global");
+    CHECK(qos_connections_snapshot(snapshot, 4, &allocated, &maximum) == 1 &&
+          snapshot[0].connections_for_ip == 2 &&
+          snapshot[0].effective_rate_kbps == 500 && allocated == 1000 && maximum == 2000,
+          "snapshot seguro reflete conexoes e vazao atuais");
 
     CHECK(qos_connection_remove("10.0.0.1", &state) == 0,
           "uma conexao removida");

@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define QOS_MAX_TRACKED_IPS 256
+#define QOS_MAX_TRACKED_IPS QOS_CONNECTIONS_MAX_IPS
 
 typedef struct {
     char ip[INET_ADDRSTRLEN];
@@ -149,4 +149,32 @@ uint64_t qos_max_global_kbps(void)
     uint64_t value = g_max_kbps;
     pthread_mutex_unlock(&g_mutex);
     return value;
+}
+
+size_t qos_connections_snapshot(QosConnectionSnapshot *items, size_t capacity,
+                                uint64_t *allocated_kbps, uint64_t *max_kbps)
+{
+    size_t count = 0;
+    pthread_mutex_lock(&g_mutex);
+    if (allocated_kbps)
+        *allocated_kbps = g_allocated_kbps;
+    if (max_kbps)
+        *max_kbps = g_max_kbps;
+    if (items) {
+        for (int i = 0; i < QOS_MAX_TRACKED_IPS && count < capacity; i++) {
+            if (g_entries[i].count <= 0)
+                continue;
+            memcpy(items[count].ip, g_entries[i].ip, sizeof items[count].ip);
+            items[count].ip[sizeof items[count].ip - 1] = '\0';
+            items[count].connections_for_ip = g_entries[i].count;
+            items[count].configured_rate_kbps = g_entries[i].configured_rate_kbps;
+            items[count].effective_rate_kbps =
+                g_entries[i].configured_rate_kbps / (uint32_t)g_entries[i].count;
+            if (items[count].effective_rate_kbps == 0)
+                items[count].effective_rate_kbps = 1;
+            count++;
+        }
+    }
+    pthread_mutex_unlock(&g_mutex);
+    return count;
 }
