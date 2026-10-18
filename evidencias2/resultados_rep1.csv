@@ -1,0 +1,5 @@
+data_hora,commit,cenario,host,porta,url,clientes,cliente,ip_origem,taxa_config_kbps,http,bytes,tempo_s,throughput_kbps,integridade,observacoes
+2026-10-17 20:24:06,788aee9,local,127.0.0.1,8080,/heavy1.jpg,4,1,padrao,4000,200,3000000,23.986474,1000,6,ok,"rep1"
+2026-10-17 20:24:06,788aee9,local,127.0.0.1,8080,/heavy1.jpg,4,2,padrao,4000,200,3000000,23.943134,1002,4,ok,"rep1"
+2026-10-17 20:24:06,788aee9,local,127.0.0.1,8080,/heavy1.jpg,4,3,padrao,4000,200,3000000,23.986602,1000,6,ok,"rep1"
+2026-10-17 20:24:06,788aee9,local,127.0.0.1,8080,/heavy1.jpg,4,4,padrao,4000,200,3000000,23.954507,1001,9,ok,"rep1"

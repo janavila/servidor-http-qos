@@ -1,0 +1,13 @@
+*   Trying 127.0.0.1:8080...
+* Name '127.0.0.2' family 2 resolved to '127.0.0.2' family 2
+* Local port: 0
+* Established connection to 127.0.0.1 (127.0.0.1 port 8080) from 127.0.0.2 port 42846 
+* using HTTP/1.x
+> GET /_t09.jpg HTTP/1.1
+> Host: 127.0.0.1:8080
+> User-Agent: curl/8.18.0
+> Accept: */*
+> 
+* Request completely sent off
+* Recv failure: Conexão fechada pela outra ponta
+* closing connection #0

@@ -1,0 +1,2384 @@
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ pwd
+uname -a
+gcc --version
+make --version
+curl --version
+wget --version
+python3 --version
+git status
+git log --oneline -5
+/home/peraca/Faculdade/trabalhos/servidor-http-qos
+Linux peraca-VirtualBox 7.0.0-34-generic #34-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep  2 14:29:37 UTC 2026 x86_64 GNU/Linux
+gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+Copyright (C) 2025 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+GNU Make 4.4.1
+Compilado para x86_64-pc-linux-gnu
+Copyright (C) 1988-2023 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+curl 8.18.0 (x86_64-pc-linux-gnu) libcurl/8.18.0 OpenSSL/3.5.5 zlib/1.3.1 brotli/1.2.0 zstd/1.5.7 libidn2/2.3.8 libpsl/0.21.2 libssh2/1.11.1 nghttp2/1.68.0 librtmp/2.3 mit-krb5/1.22.1 OpenLDAP/2.6.10
+Release-Date: 2026-01-07, security patched: 8.18.0-1ubuntu2.7
+Protocols: dict file ftp ftps gopher gophers http https imap imaps ipfs ipns ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps telnet tftp ws wss
+Features: alt-svc AsynchDNS brotli GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM PSL SPNEGO SSL threadsafe TLS-SRP UnixSockets zstd
+GNU Wget 1.25.0 construído em linux-gnu.
+
+-cares +digest -gpgme +https +ipv6 +iri +large-file -metalink +nls 
++ntlm +opie +psl +ssl/gnutls 
+
+Wgetrc: 
+    /etc/wgetrc (sistema)
+Localidade: 
+    /usr/share/locale 
+Compilação: 
+    gcc -DHAVE_CONFIG_H -DSYSTEM_WGETRC="/etc/wgetrc" 
+    -DLOCALEDIR="/usr/share/locale" -I. -I../../src -I../lib 
+    -I../../lib -Wdate-time -D_FORTIFY_SOURCE=3 
+    -I/usr/include/p11-kit-1 -DHAVE_LIBGNUTLS -DNDEBUG -g -O2 
+    -Werror=implicit-function-declaration -fno-omit-frame-pointer 
+    -mno-omit-leaf-frame-pointer 
+    -ffile-prefix-map=/build/wget-Qw3FtK/wget-1.25.0=. -flto=auto 
+    -ffat-lto-objects -fstack-protector-strong -fstack-clash-protection 
+    -Wformat -Werror=format-security -fcf-protection 
+    -fdebug-prefix-map=/build/wget-Qw3FtK/wget-1.25.0=/usr/src/wget-1.25.0-2ubuntu4.4 
+    -DNO_SSLv2 
+Link: 
+    gcc -I/usr/include/p11-kit-1 -DHAVE_LIBGNUTLS -DNDEBUG -g -O2 
+    -Werror=implicit-function-declaration -fno-omit-frame-pointer 
+    -mno-omit-leaf-frame-pointer 
+    -ffile-prefix-map=/build/wget-Qw3FtK/wget-1.25.0=. -flto=auto 
+    -ffat-lto-objects -fstack-protector-strong -fstack-clash-protection 
+    -Wformat -Werror=format-security -fcf-protection 
+    -fdebug-prefix-map=/build/wget-Qw3FtK/wget-1.25.0=/usr/src/wget-1.25.0-2ubuntu4.4 
+    -DNO_SSLv2 -Wl,-Bsymbolic-functions 
+    -Wl,--package-metadata=%7B%22type%22:%22deb%22%2C%22os%22:%22ubuntu%22%2C%22name%22:%22wget%22%2C%22version%22:%221.25.0-2ubuntu4.4%22%2C%22architecture%22:%22amd64%22%7D 
+    -flto=auto -ffat-lto-objects -Wl,-z,relro -Wl,-z,now -lpcre2-8 
+    -luuid -lidn2 -lnettle -lgnutls -lz -lpsl ../lib/libgnu.a 
+
+Copyright © 2015 Free Software Foundation, Inc.
+Licença GPLv3+: GNU GPL versão 3 ou posterior <http://gnu.org/licenses/gpl.html>
+Este é um software livre: você é livre para alterá-lo e redistribuí-lo.
+NÃO HÁ QUALQUER GARANTIA, na máxima extensão permitida em lei.
+
+Escrito originalmente por Hrvoje Niksic <hniksic@xemacs.org>.
+Por favor, envie relatos de problemas e sugestões para <bug-wget@gnu.org>.
+Python 3.14.4
+No ramo main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+788aee9 (HEAD -> main, origin/main, origin/HEAD) Conclui metricas painel e validacao do MVP2
+4755105 Implementa controle de QoS no servidor HTTP
+d8378d9 Feat: Implementação de QoS no servidor
+a7a18a2 Chore: Testa multiplas threads alocando socket
+71d5144 Adiciona README do projeto
+
+---
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ wireshark --version
+tcpdump --version
+iptraf-ng --version
+
+
+Wireshark 4.6.4.
+
+Copyright 1998-2026 Gerald Combs <gerald@wireshark.org> and contributors.
+Licensed under the terms of the GNU General Public License (version 2 or later).
+This is free software; see the file named COPYING in the distribution. There is
+NO WARRANTY; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Compile-time info:
+ Bit width: 64-bit
+  Compiler: GCC 15.2.0
+      GLib: 2.87.3
+ With:
+  +brotli                      +nghttp2 1.68.0
+  +Gcrypt 1.12.0               +nghttp3 1.12.0
+  +GnuTLS 3.8.12 and PKCS#11   +PCRE2 10.46 2025-08-27
+  +Kerberos (MIT)              +POSIX capabilities (Linux)
+  +libnl 3                     +Qt 6.10.2
+  +libpcap                     +QtDBus
+  +libsmi 0.4.8                +QtMultimedia
+  +libxml2 2.15.1              +Snappy 1.2.2
+  +Lua 5.4.8                   +xxhash 0.8.3
+  +LZ4 1.10.0                  +zlib 1.3.1
+  +MaxMind                     +Zstandard 1.5.7
+  +Minizip 1.3.1
+ Without:
+  -automatic updates  -zlib-ng
+
+Runtime info:
+      OS: Linux 7.0.0-34-generic
+     CPU: 12th Gen Intel(R) Core(TM) i5-12400F (with SSE4.2)
+  Memory: 2574 MB of physical memory
+    GLib: 2.88.0
+  Locale: LC_TYPE=pt_BR.UTF-8
+ Plugins: supported, 0 loaded
+ With:
+  +brotli 1.2.0
+  +c-ares 1.34.6
+  +Gcrypt 1.12.0
+  +GnuTLS 3.8.12
+  +libpcap 1.10.6 (64-bit time_t, with TPACKET_V3)
+  +libsmi 0.4.8
+  +LZ4 1.10.0
+  +nghttp2 1.68.0
+  +nghttp3 1.12.0
+  +PCRE2 10.46 2025-08-27
+  +Qt 6.10.2
+  +xxhash 803
+  +zlib 1.3.1
+  +Zstandard 1.5.7
+tcpdump version 4.99.6
+libpcap version 1.10.6 (64-bit time_t, with TPACKET_V3)
+OpenSSL 3.5.5 27 Jan 2026
+64-bit build, 64-bit time_t
+---
+
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ make clean
+rm -f servidor src/server.o src/http.o src/file_handler.o src/qos_config.o src/qos_throttling.o src/qos_conn_tracker.o src/qos_metrics.o src/server.d src/http.d src/file_handler.d src/qos_config.d src/qos_throttling.d src/qos_conn_tracker.d src/qos_metrics.d tests/test_qos_member1 tests/test_qos_member2 tests/test_qos_metrics
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ make
+gcc -Isrc -MMD -MP -std=c11 -Wall -Wextra -Wpedantic -O2 -pthread -c src/server.c -o src/server.o
+gcc -Isrc -MMD -MP -std=c11 -Wall -Wextra -Wpedantic -O2 -pthread -c src/http.c -o src/http.o
+gcc -Isrc -MMD -MP -std=c11 -Wall -Wextra -Wpedantic -O2 -pthread -c src/file_handler.c -o src/file_handler.o
+gcc -Isrc -MMD -MP -std=c11 -Wall -Wextra -Wpedantic -O2 -pthread -c src/qos_config.c -o src/qos_config.o
+gcc -Isrc -MMD -MP -std=c11 -Wall -Wextra -Wpedantic -O2 -pthread -c src/qos_throttling.c -o src/qos_throttling.o
+gcc -Isrc -MMD -MP -std=c11 -Wall -Wextra -Wpedantic -O2 -pthread -c src/qos_conn_tracker.c -o src/qos_conn_tracker.o
+gcc -Isrc -MMD -MP -std=c11 -Wall -Wextra -Wpedantic -O2 -pthread -c src/qos_metrics.c -o src/qos_metrics.o
+gcc src/server.o src/http.o src/file_handler.o src/qos_config.o src/qos_throttling.o src/qos_conn_tracker.o src/qos_metrics.o -o servidor -pthread
+
+---
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ make test-member1
+make test-member2
+make test
+make: *** Sem regra para processar o alvo 'test-member1'.  Pare.
+gcc -Isrc -std=c11 -Wall -Wextra -Wpedantic -O2 -pthread tests/test_qos_member2.c src/qos_config.c src/qos_conn_tracker.c -o tests/test_qos_member2 -pthread
+./tests/test_qos_member2
+[qos] 2 entrada(s) carregada(s) de '/tmp/qos_member2_tM9ptI'
+Testes do modulo de QoS (Membro 2)
+  [ OK  ] estado inicializado
+  [ OK  ] primeira conexao do IP admitida
+  [ OK  ] primeira conexao recebe a taxa completa
+  [ OK  ] vazao global do primeiro IP
+  [ OK  ] segunda conexao do mesmo IP admitida
+  [ OK  ] duas conexoes TCP contabilizadas
+  [ OK  ] taxa dividida sem dupla contabilizacao global
+  [ OK  ] snapshot seguro reflete conexoes e vazao atuais
+  [ OK  ] uma conexao removida
+  [ OK  ] conexao restante volta a taxa completa
+  [ OK  ] segundo IP rejeitado ao exceder capacidade
+  [ OK  ] rejeicao informa projecao sem alterar estado
+  [ OK  ] ultima conexao do primeiro IP removida
+  [ OK  ] IP sem conexoes libera sua alocacao
+  [ OK  ] capacidade liberada permite o segundo IP
+  [ OK  ] segundo IP aloca 1500 kbps
+  [ OK  ] limpeza do segundo IP
+  [ OK  ] estado reinicializado
+  [ OK  ] IP A admitido
+  [ OK  ] IP B admitido
+  [ OK  ] vazao global soma IPs distintos
+  [ OK  ] estado concorrente inicializado
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] registro/remocao concorrente sem falhas
+  [ OK  ] contador final nao foi corrompido
+  [ OK  ] vazao global final nao foi corrompida
+
+Todos os testes passaram. (0 falha(s))
+bash tests/test_member2.sh
+CLI e integracao keep-alive do Membro 2 passaram.
+gcc -Isrc -std=c11 -Wall -Wextra -Wpedantic -O2 -pthread tests/test_qos_member1.c src/qos_config.c src/qos_throttling.c -o tests/test_qos_member1 -pthread
+gcc -Isrc -std=c11 -Wall -Wextra -Wpedantic -O2 -pthread tests/test_qos_metrics.c src/qos_metrics.c -o tests/test_qos_metrics -pthread
+./tests/test_qos_member1
+Testes do modulo de QoS (Membro 1)
+
+== Configuracao e taxa padrao
+[qos] /tmp/qos_test_bMYVMH:6: linha invalida ignorada
+[qos] /tmp/qos_test_bMYVMH:7: linha invalida ignorada
+[qos] /tmp/qos_test_bMYVMH:8: linha invalida ignorada
+[qos] /tmp/qos_test_bMYVMH:9: linha invalida ignorada
+[qos] /tmp/qos_test_bMYVMH:10: linha invalida ignorada
+[qos] /tmp/qos_test_bMYVMH:11: IP repetido, valor anterior substituido
+[qos] 3 entrada(s) carregada(s) de '/tmp/qos_test_bMYVMH'
+  [ OK  ] qos_load_config retorna 0
+  [ OK  ] 3 IPs validos carregados (invalidos ignorados)
+  [ OK  ] 192.168.0.11 -> 1500 kbps
+  [ OK  ] 192.168.0.12 -> 1200 kbps
+  [ OK  ] IP repetido: ultima ocorrencia (2500)
+  [ OK  ] IP desconhecido -> 1000 kbps
+  [ OK  ] NULL -> 1000 kbps
+  [ OK  ] texto invalido -> 1000 kbps
+  [ OK  ] linha invalida nao entrou (abc)
+  [ OK  ] linha invalida nao entrou (taxa 0)
+  [ OK  ] linha invalida nao entrou (texto extra)
+  [ OK  ] linha invalida nao entrou (negativa)
+
+== Taxa efetiva por conexao
+  [ OK  ] 1000 kbps, 1 conexao  -> 125000 B/s
+  [ OK  ] 1000 kbps, 2 conexoes -> 62500 B/s
+  [ OK  ] 1000 kbps, 4 conexoes -> 31250 B/s
+  [ OK  ] 0 conexoes tratado como 1
+  [ OK  ] 2500 kbps, 5 conexoes -> 62500 B/s
+  [ OK  ] 1000 kbps / 3 -> 333 kbps
+  [ OK  ] piso de 1 kbps
+
+== Falha de leitura preserva a configuracao anterior
+[qos] nao foi possivel abrir '/tmp/qos_arquivo_que_nao_existe.txt': No such file or directory
+  [ OK  ] arquivo ausente retorna -1
+  [ OK  ] tabela anterior continua valendo
+
+== Pacing (200000 bytes a 800 kbps = 100000 B/s)
+  .jpg: 1.966 s (esperado ~2.00 s, aceito entre 1.87 e 2.30)
+  [ OK  ] bytes recebidos integros (tamanho e soma de verificacao)
+  [ OK  ] nao enviou mais rapido que a taxa permitida
+  [ OK  ] nao ficou muito mais lento que a taxa permitida
+  .html: 0.000 s (sem limitacao; limitado levaria ~2.00 s)
+  [ OK  ] HTML: bytes recebidos integros
+  [ OK  ] HTML isento: envio rapido, sem pacing
+
+== Taxa efetiva aplicada ao pacing (2 conexoes do mesmo IP)
+  .png: 1.904 s (esperado ~2.00 s, aceito entre 1.82 e 2.30)
+  [ OK  ] taxa dividida por 2 conexoes respeitada
+
+Todos os testes passaram. (0 falha(s))
+./tests/test_qos_member2
+[qos] 2 entrada(s) carregada(s) de '/tmp/qos_member2_Ta0aC6'
+Testes do modulo de QoS (Membro 2)
+  [ OK  ] estado inicializado
+  [ OK  ] primeira conexao do IP admitida
+  [ OK  ] primeira conexao recebe a taxa completa
+  [ OK  ] vazao global do primeiro IP
+  [ OK  ] segunda conexao do mesmo IP admitida
+  [ OK  ] duas conexoes TCP contabilizadas
+  [ OK  ] taxa dividida sem dupla contabilizacao global
+  [ OK  ] snapshot seguro reflete conexoes e vazao atuais
+  [ OK  ] uma conexao removida
+  [ OK  ] conexao restante volta a taxa completa
+  [ OK  ] segundo IP rejeitado ao exceder capacidade
+  [ OK  ] rejeicao informa projecao sem alterar estado
+  [ OK  ] ultima conexao do primeiro IP removida
+  [ OK  ] IP sem conexoes libera sua alocacao
+  [ OK  ] capacidade liberada permite o segundo IP
+  [ OK  ] segundo IP aloca 1500 kbps
+  [ OK  ] limpeza do segundo IP
+  [ OK  ] estado reinicializado
+  [ OK  ] IP A admitido
+  [ OK  ] IP B admitido
+  [ OK  ] vazao global soma IPs distintos
+  [ OK  ] estado concorrente inicializado
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] thread de teste criada
+  [ OK  ] registro/remocao concorrente sem falhas
+  [ OK  ] contador final nao foi corrompido
+  [ OK  ] vazao global final nao foi corrompida
+
+Todos os testes passaram. (0 falha(s))
+./tests/test_qos_metrics
+  [ OK  ] IP inicialmente sem metricas
+  [ OK  ] HTML deixa medicao aguardando primeiro objeto
+  [ OK  ] primeiro objeto conclui a estimativa de RTT
+  [ OK  ] RTT estimado usa T2-T1 em milissegundos
+  [ OK  ] objetos seguintes nao sobrescrevem o RTT sem novo HTML
+  [ OK  ] banda estimada usa bytes*8/(segundos*1000)
+  [ OK  ] snapshot retorna cliente medido
+  [ OK  ] estado removido sem cliente ativo
+Metricas passaram. (0 falha(s))
+bash tests/run_all.sh
+OK: respostas 200, 403, 404 e 405; HTML e imagem integros
+OK: duas respostas recebidas na mesma conexao TCP
+OK: 1 cliente(s) simultaneo(s)
+OK: 2 cliente(s) simultaneo(s)
+OK: 5 cliente(s) simultaneo(s)
+OK: 10 cliente(s) simultaneo(s)
+Todos os testes passaram.
+bash tests/test_member2.sh
+CLI e integracao keep-alive do Membro 2 passaram.
+
+---
+terminal 1
+./servidor 8080 qos_config.txt 5000
+[qos] 1 entrada(s) carregada(s) de 'qos_config.txt'
+Servidor iniciado na porta 8080
+Arquivo QoS: qos_config.txt
+Vazao maxima: 5000 kbps
+
+
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:37536
+GET /
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+
+terminal 2
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ curl -v http://127.0.0.1:8080/
+*   Trying 127.0.0.1:8080...
+* Established connection to 127.0.0.1 (127.0.0.1 port 8080) from 127.0.0.1 port 37536 
+* using HTTP/1.x
+> GET / HTTP/1.1
+> Host: 127.0.0.1:8080
+> User-Agent: curl/8.18.0
+> Accept: */*
+> 
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Content-Type: text/html; charset=utf-8
+< Content-Length: 877
+< Connection: keep-alive
+< Server: servidor-mvp1
+< 
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Servidor HTTP/1.1 - MVP1</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main>
+    <h1>Servidor HTTP/1.1</h1>
+    <p>Esta pagina e seus quatro arquivos de imagem foram servidos pelo projeto MVP1.</p>
+    <section class="galeria">
+      <figure><img src="/imagem1.jpg" alt="Padrao de teste azul"><figcaption>Imagem 1</figcaption></figure>
+      <figure><img src="/imagem2.jpg" alt="Padrao de teste verde"><figcaption>Imagem 2</figcaption></figure>
+      <figure><img src="/imagem3.jpg" alt="Padrao de teste laranja"><figcaption>Imagem 3</figcaption></figure>
+      <figure><img src="/imagem4.jpg" alt="Padrao de teste roxo"><figcaption>Imagem 4</figcaption></figure>
+    </section>
+  </main>
+</body>
+</html>
+* Connection #0 to host 127.0.0.1:8080 left intact
+
+---
+terminal 2
+curl -v http://127.0.0.1:8080/naoexiste.txt
+terminal 1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:58742
+GET /naoexiste.txt
+404 Not Found
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+
+---
+
+terminal 2 
+curl -v -X POST http://127.0.0.1:8080/
+
+terminal 1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:52946
+POST /
+405 Erro
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+
+---
+
+terminal 2
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ bash tests/test_keepalive.sh 8080
+OK: duas respostas recebidas na mesma conexao TCP
+
+terminal 1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:49034
+GET /
+200 OK
+GET /style.css
+Metricas 127.0.0.1: RTT estimado 0.26 ms, banda estimada 523076.92 kbps
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+
+---
+
+terminal 2
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ bash tests/test_concurrent.sh 8080 
+OK: 1 cliente(s) simultaneo(s)
+OK: 2 cliente(s) simultaneo(s)
+OK: 5 cliente(s) simultaneo(s)
+OK: 10 cliente(s) simultaneo(s)
+
+terminal 1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:54442
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           1      1000       1000    0.26 ms 523076.92 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           1      1000       1000    0.26 ms 523076.92 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 0 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+Nenhum cliente ativo.
+============================================================
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:54446
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:54444
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           2      1000        500    0.26 ms  995.84 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           2      1000        500    0.26 ms  995.84 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           2      1000        500    0.26 ms  995.84 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:50742
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:50744
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:50748
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:50746
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:50784
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200    0.26 ms  505.61 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200    0.26 ms  505.61 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200    0.26 ms  505.61 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200    0.26 ms  505.61 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200    0.26 ms  505.61 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200    0.26 ms  505.61 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200    0.26 ms  505.61 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:38060
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:38070
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:38084
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:38088
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:38104
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 6
+Taxa configurada: 1000 kbps
+Taxa efetiva: 166 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:38106
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 7
+Taxa configurada: 1000 kbps
+Taxa efetiva: 142 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:38112
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 8
+Taxa configurada: 1000 kbps
+Taxa efetiva: 125 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:38118
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 9
+Taxa configurada: 1000 kbps
+Taxa efetiva: 111 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:38128
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 10
+Taxa configurada: 1000 kbps
+Taxa efetiva: 100 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:38132
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1          10      1000        100    0.26 ms  200.44 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 9
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 8
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 7
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 6
+Vazao global alocada: 1000/5000 kbps
+200 OK
+200 OK
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 5
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Cliente desconectado: 127.0.0.1
+Vazao global alocada: 1000/5000 kbps
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+
+---
+terminal 2
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ bash tests/test_pacing.sh 8080 1000
+Taxa configurada: 1000 kbps | arquivo de teste: 375000 bytes | tempo esperado limitado: ~3,00 s
+
+== Teste 1: /_pacing_test.jpg (limitado)
+  tempo medido: 2.973488 s (esperado ~3,00 s, tolerancia 20%)
+  OK
+
+== Teste 2: /_pacing_test.html (isento)
+  tempo medido: 0.000434 s (limitado levaria ~3,00 s)
+  OK
+
+Todos os testes de pacing passaram.
+
+terminal 1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:48056
+GET /_pacing_test.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           1      1000       1000         --           --
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:48060
+GET /_pacing_test.html
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+
+---
+
+terminal 1
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ ./servidor 8080 qos_config.txt 5000
+[qos] 1 entrada(s) carregada(s) de 'qos_config.txt'
+Servidor iniciado na porta 8080
+Arquivo QoS: qos_config.txt
+Vazao maxima: 5000 kbps
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 0 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+Nenhum cliente ativo.
+============================================================
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:41102
+GET /_pacing_test.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           1      1000       1000         --           --
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           1      1000       1000         --           --
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:44520
+GET /_pacing_test.html
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:44526
+GET /_pacing_test.jpg
+Cliente conectado: 127.0.0.1:44524
+GET /_pacing_test.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           2      1000        500         -- 1000.22 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           2      1000        500         -- 1000.22 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           2      1000        500         -- 1000.22 kbps
+============================================================
+200 OK
+Metricas 127.0.0.1: RTT estimado 10.12 ms, banda estimada 507.53 kbps
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/5000 kbps
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+
+terminal 2
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ PARALLEL=2 bash tests/test_pacing.sh 8080 1000
+Taxa configurada: 1000 kbps | arquivo de teste: 375000 bytes | tempo esperado limitado: ~3,00 s
+
+== Teste 1: /_pacing_test.jpg (limitado)
+  tempo medido: 2.999798 s (esperado ~3,00 s, tolerancia 20%)
+  OK
+
+== Teste 2: /_pacing_test.html (isento)
+  tempo medido: 0.000488 s (limitado levaria ~3,00 s)
+  OK
+
+== Teste 3: 2 conexoes simultaneas do mesmo IP (taxa dividida)
+  conexao 1: 5.911300 s (esperado ~6,00 s) OK
+  conexao 2: 5.911309 s (esperado ~6,00 s) OK
+
+Todos os testes de pacing passaram.
+
+---
+
+terminal 1
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ ./servidor 8080 qos_config.txt 5000
+[qos] 1 entrada(s) carregada(s) de 'qos_config.txt'
+Servidor iniciado na porta 8080
+Arquivo QoS: qos_config.txt
+Vazao maxima: 5000 kbps
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 0 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+Nenhum cliente ativo.
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 0 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+Nenhum cliente ativo.
+============================================================
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:38808
+GET /_pacing_test.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           1      1000       1000         --           --
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           1      1000       1000         --           --
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:44428
+GET /_pacing_test.html
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:44454
+GET /_pacing_test.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:44442
+GET /_pacing_test.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/5000 kbps
+Cliente conectado: 127.0.0.1:44444
+GET /_pacing_test.jpg
+Cliente conectado: 127.0.0.1:44464
+GET /_pacing_test.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           4      1000        250         -- 1014.76 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           4      1000        250         -- 1014.76 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           4      1000        250         -- 1014.76 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           4      1000        250         -- 1014.76 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           4      1000        250         -- 1014.76 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 5000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           4      1000        250         -- 1014.76 kbps
+============================================================
+Metricas 127.0.0.1: RTT estimado 70.42 ms, banda estimada 254.09 kbps
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/5000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/5000 kbps
+200 OK
+Cliente desconectado: 127.0.0.1
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/5000 kbps
+Cliente desconectado: 127.0.0.1
+
+terminal 2
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ PARALLEL=4 bash tests/test_pacing.sh 8080 1000
+Taxa configurada: 1000 kbps | arquivo de teste: 375000 bytes | tempo esperado limitado: ~3,00 s
+
+== Teste 1: /_pacing_test.jpg (limitado)
+  tempo medido: 2.956723 s (esperado ~3,00 s, tolerancia 20%)
+  OK
+
+== Teste 2: /_pacing_test.html (isento)
+  tempo medido: 0.056783 s (limitado levaria ~3,00 s)
+  OK
+
+== Teste 3: 4 conexoes simultaneas do mesmo IP (taxa dividida)
+  conexao 1: 11.807525 s (esperado ~12,00 s) OK
+  conexao 2: 11.942809 s (esperado ~12,00 s) OK
+  conexao 3: 11.942736 s (esperado ~12,00 s) OK
+  conexao 4: 11.942800 s (esperado ~12,00 s) OK
+
+Todos os testes de pacing passaram.
+
+---
+
+PRECISA SER FEITO O TESTE 10 
+
+---
+
+PRECISA SER FEITO O TESTE 11
+
+---
+
+PRECISA SER FEITO O TESTE 12
+
+---
+
+terminal 2
+
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ bash tests/test_stability.sh 8080 1000
+T10 OK: servidor respondeu apos 10 rodadas de 5 clientes.
+
+terminal 1
+
+peraca@peraca-VirtualBox:~/Faculdade/trabalhos/servidor-http-qos$ ./servidor 8080 qos_config.txt 2000
+[qos] 1 entrada(s) carregada(s) de 'qos_config.txt'
+Servidor iniciado na porta 8080
+Arquivo QoS: qos_config.txt
+Vazao maxima: 2000 kbps
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 0 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+Nenhum cliente ativo.
+============================================================
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:45124
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:45126
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Cliente conectado: 127.0.0.1:45122
+Cliente conectado: 127.0.0.1:45138
+GET /imagem1.jpg
+GET /imagem1.jpg
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:45144
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --           --
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --           --
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --           --
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --           --
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --           --
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --           --
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --           --
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --           --
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Vazao global alocada: 1000/2000 kbps
+200 OK
+Cliente desconectado: 127.0.0.1
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:51350
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:51352
+Cliente conectado: 127.0.0.1:51346
+GET /imagem1.jpg
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:51354
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:51348
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.47 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.47 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.47 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.47 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.47 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.47 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.47 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/2000 kbps
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           2      1000        500         --  201.79 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:57440
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:57446
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:57448
+Cliente conectado: 127.0.0.1:57466
+GET /imagem1.jpg
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:57470
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.28 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.28 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.28 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.28 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.28 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.28 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.28 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+200 OK
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:43038
+Cliente conectado: 127.0.0.1:43036
+GET /imagem1.jpg
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:43050
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:43062
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:43074
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.80 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.80 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.80 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.80 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.80 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.80 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.80 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.80 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/2000 kbps
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:48424
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/2000 kbps
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:48428
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:48426
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:48460
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:48468
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.76 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.76 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.76 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.76 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.76 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.76 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  201.76 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+200 OK
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/2000 kbps
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/2000 kbps
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:47752
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/2000 kbps
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:47756
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:47754
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:47786
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:47788
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.49 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.49 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.49 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.49 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.49 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.49 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.49 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.49 kbps
+============================================================
+200 OK
+200 OK
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Vazao global alocada: 1000/2000 kbps
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/2000 kbps
+Cliente removido: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Cliente conectado: 127.0.0.1:54822
+GET /imagem1.jpg
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:54850
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:54824
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:54852
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:54858
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.38 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.38 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.38 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.38 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.38 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.38 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.38 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.38 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+200 OK
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:60648
+Cliente conectado: 127.0.0.1:60650
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/2000 kbps
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:60646
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Cliente conectado: 127.0.0.1:60664
+GET /imagem1.jpg
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:60676
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.50 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.50 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.50 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.50 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.50 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.50 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.50 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Vazao global alocada: 1000/2000 kbps
+200 OK
+Cliente removido: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/2000 kbps
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:45030
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/2000 kbps
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:45032
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:45028
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:45052
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:45062
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.35 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.35 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.35 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.35 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.35 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.35 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.35 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.35 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/2000 kbps
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 2
+Taxa configurada: 1000 kbps
+Taxa efetiva: 500 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:43328
+Cliente conectado: 127.0.0.1:43324
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 3
+Taxa configurada: 1000 kbps
+Taxa efetiva: 333 kbps
+Vazao global alocada: 1000/2000 kbps
+GET /imagem1.jpg
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 4
+Taxa configurada: 1000 kbps
+Taxa efetiva: 250 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:43332
+GET /imagem1.jpg
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 5
+Taxa configurada: 1000 kbps
+Taxa efetiva: 200 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:43326
+GET /imagem1.jpg
+Cliente conectado: 127.0.0.1:43330
+GET /imagem1.jpg
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.23 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.23 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.23 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.23 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.23 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.23 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.23 kbps
+============================================================
+
+============================================================
+Servidor HTTP/1.1 + QoS | Vazao: 1000 / 2000 kbps
+------------------------------------------------------------
+IP               Con.   Taxa IP  Taxa/Conn   RTT est.   Banda est.
+127.0.0.1           5      1000        200         --  200.23 kbps
+============================================================
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 4
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 3
+Vazao global alocada: 1000/2000 kbps
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 2
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente desconectado: 127.0.0.1
+200 OK
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 1
+Vazao global alocada: 1000/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/2000 kbps
+Cliente desconectado: 127.0.0.1
+Cliente admitido: 127.0.0.1
+Conexoes do IP: 1
+Taxa configurada: 1000 kbps
+Taxa efetiva: 1000 kbps
+Vazao global alocada: 1000/2000 kbps
+Cliente conectado: 127.0.0.1:52458
+GET /
+200 OK
+Cliente removido: 127.0.0.1
+Conexoes restantes do IP: 0
+Vazao global alocada: 0/2000 kbps
+Cliente desconectado: 127.0.0.1
+
+---
+
+FAZER O TESTE 14 
+
+---
+
+

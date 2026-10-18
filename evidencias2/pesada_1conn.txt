@@ -1,0 +1,8 @@
+Servidor 127.0.0.1:8080 | pagina /pesada.html | conexoes para objetos: 1
+  /pesada.html                 http=200         865 B     0.002 s      3696.1 kbps   <- HTML
+  /style.css                   http=200         510 B     0.064 s        63.6 kbps   <- 1o objeto
+  /heavy1.jpg                  http=200     3000000 B     6.000 s      3999.8 kbps
+  /heavy2.jpg                  http=200     3000000 B     6.002 s      3998.6 kbps
+  /heavy3.jpg                  http=200     3000000 B     5.998 s      4001.5 kbps
+  /heavy4.jpg                  http=200     3000000 B     5.998 s      4001.5 kbps
+Total: 12001375 B em 24.065 s (3989.6 kbps medios)
