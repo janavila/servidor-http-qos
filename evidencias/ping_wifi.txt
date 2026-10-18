@@ -1,0 +1,9 @@
+# wifi rep1 ip_origem=192.168.8.7
+10 packets transmitted, 10 received, 0% packet loss, time 9015ms
+rtt min/avg/max/mdev = 1.258/3.922/12.437/3.523 ms
+# wifi rep2 ip_origem=192.168.8.7
+10 packets transmitted, 10 received, 0% packet loss, time 9012ms
+rtt min/avg/max/mdev = 1.285/2.320/4.593/1.087 ms
+# wifi rep3 ip_origem=192.168.8.7
+10 packets transmitted, 10 received, 0% packet loss, time 9014ms
+rtt min/avg/max/mdev = 1.237/2.758/7.487/1.872 ms

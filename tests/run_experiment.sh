@@ -16,9 +16,14 @@
 #                       vazio = IP padrao do sistema)
 #   CONFIG_KBPS=       taxa configurada no servidor para estes clientes (so informativo, vai no CSV)
 #   REF_FILE=          copia local do arquivo para conferir integridade (sha256)
+#   REF_SHA=           alternativa ao REF_FILE: hash sha256 esperado (rode `sha256sum` no
+#                      servidor e passe aqui, util quando o cliente nao tem o arquivo)
 #   OUT=resultados.csv arquivo de saida (cria o cabecalho se nao existir)
 #   NOTES=""           observacao livre
 set -u
+# Numeros com ponto decimal em qualquer idioma do sistema: em pt_BR o awk imprimiria
+# "3,00", o que quebraria comparacoes e as colunas do CSV.
+export LC_ALL=C
 
 PORT="${1:-8080}"
 URLPATH="${2:-/imagem1.jpg}"
@@ -28,6 +33,7 @@ CLIENTS="${CLIENTS:-1}"
 SRC_IPS="${SRC_IPS:-}"
 CONFIG_KBPS="${CONFIG_KBPS:-}"
 REF_FILE="${REF_FILE:-}"
+REF_SHA="${REF_SHA:-}"
 OUT="${OUT:-resultados.csv}"
 NOTES="${NOTES:-}"
 
@@ -36,7 +42,6 @@ for cmd in curl awk sha256sum mktemp; do
 done
 case "$CLIENTS" in ''|*[!0-9]*|0) echo "ERRO: CLIENTS deve ser um inteiro >= 1" >&2; exit 2;; esac
 
-REF_SHA=""
 if [ -n "$REF_FILE" ]; then
     [ -r "$REF_FILE" ] || { echo "ERRO: REF_FILE '$REF_FILE' nao legivel" >&2; exit 2; }
     REF_SHA="$(sha256sum "$REF_FILE" | cut -d' ' -f1)"

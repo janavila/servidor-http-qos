@@ -1,0 +1,9 @@
+# ethernet rep1 ip_origem=192.168.8.6
+10 packets transmitted, 10 received, 0% packet loss, time 9126ms
+rtt min/avg/max/mdev = 0.861/0.953/1.048/0.069 ms
+# ethernet rep2 ip_origem=192.168.8.6
+10 packets transmitted, 10 received, 0% packet loss, time 9020ms
+rtt min/avg/max/mdev = 0.814/1.155/2.441/0.514 ms
+# ethernet rep3 ip_origem=192.168.8.6
+10 packets transmitted, 10 received, 0% packet loss, time 9046ms
+rtt min/avg/max/mdev = 0.868/1.094/1.712/0.232 ms
